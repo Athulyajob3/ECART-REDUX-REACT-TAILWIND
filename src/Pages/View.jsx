@@ -2,11 +2,14 @@
 import Header from '../Components/Header';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { addToWishlist } from '../redux/slices/wishlistSlice'; // <-- ADD THIS LINE
+import { addToWishlist } from '../redux/slices/wishlistSlice';
+import { addToCart } from '../redux/slices/cartSlice';  
 
 const View = () => {
-  const dispatch = useDispatch();
+  const userCart = useSelector(state => state.cartReducer);
   const userWishlist = useSelector(state => state.wishlistReducer);
+  const dispatch = useDispatch();
+
   const [product, setProduct] = useState({});
   const { id } = useParams();
   const { allProducts } = useSelector(state => state.productReducer);
@@ -23,8 +26,18 @@ const View = () => {
     if (existingWishlist) {
       alert("Product Already Added In Wishlist");
     } else {
-      dispatch(addToWishlist(product));  // dispatch the imported action
+      dispatch(addToWishlist(product));
       alert("Product Added to Wishlist");
+    }
+  };
+
+  const handleCart = () => {
+    const existingProduct = userCart?.find(item => item.id == id);
+    if (existingProduct) {
+      alert("Product quantity incremented");
+    } else {
+      dispatch(addToCart(product));  
+      alert("Product Added to cart");
     }
   };
 
@@ -79,7 +92,7 @@ const View = () => {
               <button onClick={handleWishlist} className="bg-blue-700 hover:bg-blue-800 rounded text-white px-4 py-2">
                 ADD TO WISHLIST
               </button>
-              <button className="bg-green-700 hover:bg-green-800 rounded text-white px-4 py-2">
+              <button onClick={handleCart} className="bg-green-700 hover:bg-green-800 rounded text-white px-4 py-2">
                 ADD TO CART
               </button>
             </div>
